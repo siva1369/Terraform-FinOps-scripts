@@ -1,0 +1,36 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "FinOps Cloud Intelligence Dashboard Stack",
+
+  "Parameters": {
+    "CURDatabaseName": {
+      "Type": "String",
+      "Default": "finops_cur_db"
+    },
+    "CURTableName": {
+      "Type": "String",
+      "Default": "cost_and_usage_report"
+    },
+    "AthenaWorkgroup": {
+      "Type": "String",
+      "Default": "finops-workgroup"
+    }
+  },
+
+  "Resources": {
+    "FinOpsDashboardLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/finops/dashboard/logs",
+        "RetentionInDays": 7
+      }
+    }
+  },
+
+  "Outputs": {
+    "DashboardStatus": {
+      "Description": "FinOps Dashboard Stack Status",
+      "Value": "Cloud Intelligence Dashboard Stack Created Successfully"
+    }
+  }
+}
