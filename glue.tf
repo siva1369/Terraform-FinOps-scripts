@@ -50,6 +50,8 @@ resource "aws_glue_crawler" "crawler" {
     path = "s3://${aws_s3_bucket.cur_bucket.bucket}/cur"
   }
 
+  schedule = "cron(0 2 * * ? *)"
+
   schema_change_policy {
 
     update_behavior = "UPDATE_IN_DATABASE"
@@ -60,4 +62,5 @@ resource "aws_glue_crawler" "crawler" {
   depends_on = [
     aws_cur_report_definition.cur
   ]
+
 }
