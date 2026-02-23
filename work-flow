@@ -1,13 +1,56 @@
-AWS Cost & Usage Report (CUR)
-        ↓
-S3 Bucket
-        ↓
-Glue Crawler → creates table
-        ↓
-Athena Workgroup
-        ↓
-CloudFormation Stack (CUDOS)
-        ↓
-QuickSight Dataset
-        ↓
-QuickSight Dashboard 
+
+
+
+                         ┌──────────────────────────────┐
+                         │        AWS Billing           │
+                         │  (All AWS Accounts Spend)    │
+                         └──────────────┬───────────────┘
+                                        │
+                                        ▼
+                    ┌────────────────────────────────────┐
+                    │ AWS Cost & Usage Report (CUR)      │
+                    │ Generates detailed billing data    │
+                    └──────────────┬─────────────────────┘
+                                   │ Daily Delivery
+                                   ▼
+                 ┌───────────────────────────────────────┐
+                 │              Amazon S3                │
+                 │  CUR Parquet files stored here        │
+                 │  s3://finops-cur-bucket/cur/          │
+                 └──────────────┬────────────────────────┘
+                                │
+                                ▼
+               ┌────────────────────────────────────────┐
+               │              AWS Glue Crawler          │
+               │  • Scans S3 CUR files                  │
+               │  • Detects schema                      │
+               │  • Updates Glue Data Catalog           │
+               │  • Scheduled daily (Automated)        │
+               └──────────────┬─────────────────────────┘
+                              │
+                              ▼
+           ┌────────────────────────────────────────────┐
+           │        AWS Glue Data Catalog Database      │
+           │           finops_cur_db                    │
+           └──────────────┬─────────────────────────────┘
+                          │
+                          ▼
+            ┌──────────────────────────────────────────┐
+            │               Amazon Athena              │
+            │  • Queries CUR data                     │
+            │  • Uses Workgroup: finops-workgroup     │
+            └──────────────┬───────────────────────────┘
+                           │
+                           ▼
+        ┌────────────────────────────────────────────────────┐
+        │ CloudFormation Stack (CUDOS Template)             │
+        │ Deploys AWS Cloud Intelligence Dashboards         │
+        └──────────────┬─────────────────────────────────────┘
+                       │
+                       ▼
+        ┌────────────────────────────────────────────────────┐
+        │               Amazon QuickSight                   │
+        │  • Creates Dataset from Athena                   │
+        │  • Builds Analysis                               │
+        │  • Publishes Dashboard                           │
+        └────────────────────────────────────────────────────┘
