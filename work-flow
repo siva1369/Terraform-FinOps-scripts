@@ -1,0 +1,13 @@
+AWS Cost & Usage Report (CUR)
+        ↓
+S3 Bucket
+        ↓
+Glue Crawler → creates table
+        ↓
+Athena Workgroup
+        ↓
+CloudFormation Stack (CUDOS)
+        ↓
+QuickSight Dataset
+        ↓
+QuickSight Dashboard 
