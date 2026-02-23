@@ -1,8 +1,12 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "FinOps Cloud Intelligence Dashboard Stack",
+  "Description": "FinOps Cloud Intelligence Dashboard",
 
   "Parameters": {
+    "AthenaWorkgroup": {
+      "Type": "String",
+      "Default": "finops-workgroup"
+    },
     "CURDatabaseName": {
       "Type": "String",
       "Default": "finops_cur_db"
@@ -10,27 +14,45 @@
     "CURTableName": {
       "Type": "String",
       "Default": "cost_and_usage_report"
-    },
-    "AthenaWorkgroup": {
-      "Type": "String",
-      "Default": "finops-workgroup"
     }
   },
 
   "Resources": {
-    "FinOpsDashboardLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
+
+    "QuickSightDataSource": {
+      "Type": "AWS::QuickSight::DataSource",
       "Properties": {
-        "LogGroupName": "/finops/dashboard/logs",
-        "RetentionInDays": 7
+        "AwsAccountId": { "Ref": "AWS::AccountId" },
+        "DataSourceId": "finops-athena-datasource",
+        "Name": "FinOps Athena DataSource",
+        "Type": "ATHENA",
+        "DataSourceParameters": {
+          "AthenaParameters": {
+            "WorkGroup": { "Ref": "AthenaWorkgroup" }
+          }
+        },
+        "Permissions": [
+          {
+            "Principal": {
+              "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:user/default/${AWS::AccountId}"
+            },
+            "Actions": [
+              "quicksight:DescribeDataSource",
+              "quicksight:DescribeDataSourcePermissions",
+              "quicksight:PassDataSource",
+              "quicksight:UpdateDataSource",
+              "quicksight:DeleteDataSource"
+            ]
+          }
+        ]
       }
     }
+
   },
 
   "Outputs": {
     "DashboardStatus": {
-      "Description": "FinOps Dashboard Stack Status",
-      "Value": "Cloud Intelligence Dashboard Stack Created Successfully"
+      "Value": "QuickSight DataSource Created. Create dashboard manually or use full CID template."
     }
   }
 }
